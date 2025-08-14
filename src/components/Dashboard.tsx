@@ -19,11 +19,8 @@ import {
   Package,
   DollarSign,
   ShoppingCart,
-  Users,
-  Calendar,
   Filter,
-  Download,
-  Star
+  Download
 } from 'lucide-react';
 
 export default function Dashboard() {

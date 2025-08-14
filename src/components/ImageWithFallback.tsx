@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ImageOff, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 interface ImageWithFallbackProps {
   src: string;

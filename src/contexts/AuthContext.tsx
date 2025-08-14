@@ -9,7 +9,6 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   sendPasswordResetEmail,
-  AuthError,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import toast from 'react-hot-toast';

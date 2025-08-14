@@ -6,8 +6,8 @@
   "author": "Summit Global Teknologi",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "dev:firebase": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:firebase": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

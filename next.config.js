@@ -1,54 +1,72 @@
 // next.config.js
 
+// Base experimental configuration
+const baseExperimental = {
+  optimizePackageImports: ['lucide-react', 'react-hot-toast'],
+  turbo: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
+};
+
+// Base images configuration
+const baseImages = {
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: '**',
+    },
+    {
+      protocol: 'http',
+      hostname: '**',
+    },
+    // Add specific domains for better security in production
+    {
+      protocol: 'https',
+      hostname: 'images.unsplash.com',
+    },
+    {
+      protocol: 'https',
+      hostname: 'via.placeholder.com',
+    },
+    {
+      protocol: 'https',
+      hostname: 'picsum.photos',
+    },
+    {
+      protocol: 'https',
+      hostname: 'loremflickr.com',
+    },
+  ],
+  deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  formats: ['image/webp', 'image/avif'],
+  minimumCacheTTL: 86400, // 24 hours
+  dangerouslyAllowSVG: true,
+  contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+};
+
 const nextConfig = {
   // Enable experimental features
   experimental: {
-    optimizePackageImports: ['lucide-react', 'react-hot-toast'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
+    ...baseExperimental,
+    // Add development-specific experimental features
+    ...(process.env.NODE_ENV === 'development' && {
+      webpackBuildWorker: true,
+    }),
   },
 
   // Image configuration
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-      {
-        protocol: 'http',
-        hostname: '**',
-      },
-      // Add specific domains for better security in production
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'via.placeholder.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
-      {
-        protocol: 'https',
-        hostname: 'loremflickr.com',
-      },
-    ],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ['image/webp', 'image/avif'],
-    minimumCacheTTL: 86400, // 24 hours
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    ...baseImages,
+    // Production optimization
+    ...(process.env.NODE_ENV === 'production' && {
+      unoptimized: false,
+    }),
   },
 
   // Headers for security and performance
@@ -147,8 +165,12 @@ const nextConfig = {
 
     // Bundle analyzer (only in development with ANALYZE=true)
     if (process.env.ANALYZE === 'true') {
-      const { BundleAnalyzerPlugin } = require('@next/bundle-analyzer')()
-      config.plugins.push(new BundleAnalyzerPlugin())
+      try {
+        const { BundleAnalyzerPlugin } = require('@next/bundle-analyzer')()
+        config.plugins.push(new BundleAnalyzerPlugin())
+      } catch (error) {
+        console.warn('Bundle analyzer not available:', error.message)
+      }
     }
 
     return config
@@ -203,15 +225,6 @@ const nextConfig = {
     },
   },
 
-  // Development configuration
-  ...(process.env.NODE_ENV === 'development' && {
-    // Enable webpack build worker in development
-    experimental: {
-      ...nextConfig.experimental,
-      webpackBuildWorker: true,
-    },
-  }),
-
   // Production optimizations
   ...(process.env.NODE_ENV === 'production' && {
     // Reduce JavaScript bundle size in production
@@ -221,16 +234,7 @@ const nextConfig = {
         exclude: ['error', 'warn'],
       },
     },
-    
-    // Enable gzip compression
-    compress: true,
-    
-    // Optimize images more aggressively
-    images: {
-      ...nextConfig.images,
-      unoptimized: false,
-    },
   }),
 }
 
-export default nextConfig
+module.exports = nextConfig
