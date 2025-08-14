@@ -64,7 +64,7 @@ export default function Dashboard() {
       const response = await ApiService.getProducts({
         page,
         limit,
-        search: search || undefined
+        ...(search && { search })
       });
 
       if (response.is_success) {
