@@ -1,66 +1,33 @@
 {
-  "name": "summit-global-dashboard",
-  "version": "1.0.0",
+  "name": "juniorjobsummitglobal",
+  "version": "0.1.0",
   "private": true,
-  "description": "Advanced product management dashboard for Summit Global Teknologi",
-  "author": "Summit Global Teknologi",
-  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "dev:firebase": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "type-check": "tsc --noEmit",
-    "clean": "rm -rf .next out dist",
-    "analyze": "ANALYZE=true npm run build"
+    "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@ant-design/nextjs-registry": "^1.1.0",
+    "antd": "^5.12.8",
     "axios": "^1.6.2",
-    "clsx": "^2.1.1",
     "firebase": "^10.7.1",
-    "lucide-react": "^0.539.0",
     "next": "14.2.31",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1",
-    "react-icons": "^5.0.1"
+    "react": "^18",
+    "react-dom": "^18",
+    "recharts": "^2.8.0",
+    "typescript": "^5"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^14.2.31",
-    "@tailwindcss/postcss": "^4.0.6",
-    "@types/node": "^20.10.0",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
+    "@tailwindcss/postcss": "latest",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "autoprefixer": "^10.4.17",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^4.0.6",
-    "typescript": "^5.3.3"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "keywords": [
-    "nextjs",
-    "react",
-    "typescript",
-    "dashboard",
-    "product-management",
-    "firebase",
-    "tailwindcss"
-  ]
+    "postcss": "^8",
+    "tailwindcss": "^4.0.6"
+  }
 }
