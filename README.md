@@ -1,6 +1,7 @@
 # Product Dashboard - Summit Global Teknologi
 
 Technical Test untuk posisi Junior Frontend Developer menggunakan Next.js 14, TypeScript, Ant Design, dan Firebase Authentication.
+Link untuk akses di web https://juniorjobsummitglobal.vercel.app/
 
 ## Features
 
