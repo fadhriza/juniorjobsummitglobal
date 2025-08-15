@@ -8,7 +8,8 @@ const BACKEND_URL = process.env.BACKEND_URL;
 // GET single product
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    // Get search parameters from NextRequest
+    const searchParams = request.nextUrl.searchParams;
     const productId = searchParams.get('product_id');
     
     if (!productId) {
@@ -125,3 +126,7 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+// Add runtime configuration
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';

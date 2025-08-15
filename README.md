@@ -36,8 +36,8 @@ Ada 3 cara untuk mengatur backend URL:
 
 **Option 1: Automatic Detection (Recommended)**
 File `.env.local` sudah disediakan dengan `BACKEND_URL=` kosong. Aplikasi akan otomatis detect:
-- **Development**: `http://localhost:8001` (untuk backend lokal)
-- **Production**: `https://technical-test-be-production.up.railway.app` (untuk railway)
+- `http://localhost:8001` (untuk backend lokal)
+- `https://technical-test-be-production.up.railway.app` (untuk railway)
 
 **Option 2: Manual Override**
 Set `BACKEND_URL` di `.env.local`:

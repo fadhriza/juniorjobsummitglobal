@@ -7,7 +7,8 @@ const BACKEND_URL = process.env.BACKEND_URL;
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    // Get search parameters from NextRequest
+    const searchParams = request.nextUrl.searchParams;
     const page = searchParams.get('page') || '1';
     const limit = searchParams.get('limit') || '10';
     const search = searchParams.get('search') || '';
@@ -75,3 +76,7 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// Add runtime configuration
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
