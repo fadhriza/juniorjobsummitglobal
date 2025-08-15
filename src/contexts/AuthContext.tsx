@@ -1,4 +1,5 @@
 // src/contexts/AuthContext.tsx
+
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -10,9 +11,17 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import { AuthContext as AuthContextType } from "../types";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContext {
+  user: User | null;
+  logout: () => Promise<void>;
+  getToken: () => Promise<string | null>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContext | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -37,8 +46,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const signUp = async (email: string, password: string) => {
+    await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const logout = async () => {
@@ -56,7 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const value = {
     user,
     loading,
-    login,
+    signIn,
+    signUp,
     logout,
     getToken,
   };

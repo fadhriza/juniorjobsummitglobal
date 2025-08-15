@@ -1,9 +1,9 @@
 // src/lib/api.ts
+
 import axios from 'axios';
-import { auth } from './firebase';
 import { Product, CreateProductData, UpdateProductData, ApiResponse, ProductListParams } from '../types';
 
-// Create axios instance for internal API routes
+// Create axios instance
 const apiClient = axios.create({
   baseURL: '/api',
   headers: {
@@ -11,18 +11,17 @@ const apiClient = axios.create({
   },
 });
 
-// Add request interceptor to include Firebase auth token
-apiClient.interceptors.request.use(async (config) => {
-  const currentUser = auth.currentUser;
-  if (currentUser) {
-    const token = await currentUser.getIdToken();
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 // API Service class
 export class ApiService {
+  // Set authorization token
+  static setAuthToken(token: string | null) {
+    if (token) {
+      apiClient.defaults.headers.Authorization = token;
+    } else {
+      delete apiClient.defaults.headers.Authorization;
+    }
+  }
+
   // Get products with pagination and search
   static async getProducts(params?: Partial<ProductListParams>): Promise<ApiResponse<Product[]>> {
     const queryParams = new URLSearchParams();

@@ -1,9 +1,10 @@
 // src/app/page.tsx
+
 'use client';
 
+import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Spin } from 'antd';
 
 export default function Home() {
@@ -21,11 +22,13 @@ export default function Home() {
   }, [user, loading, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <Spin size="large" />
-        <p className="mt-4 text-gray-600">Loading...</p>
-      </div>
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center' 
+    }}>
+      <Spin size="large" />
     </div>
   );
 }

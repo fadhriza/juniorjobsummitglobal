@@ -1,4 +1,5 @@
 // src/types/index.ts
+
 export interface Product {
   product_id: string;
   product_title: string;
@@ -8,6 +9,13 @@ export interface Product {
   product_category?: string;
   created_timestamp: string;
   updated_timestamp: string;
+}
+
+export interface ProductListParams {
+  page: number;
+  limit: number;
+  offset: number;
+  search?: string;
 }
 
 export interface CreateProductData {
@@ -26,13 +34,6 @@ export interface UpdateProductData {
   product_category?: string;
 }
 
-export interface ProductListParams {
-  page: number;
-  limit: number;
-  offset: number;
-  search?: string;
-}
-
 export interface ApiResponse<T> {
   status_code: string;
   is_success: boolean;
@@ -45,12 +46,4 @@ export interface ApiResponse<T> {
     total_pages: number;
     search: string | null;
   };
-}
-
-export interface AuthContext {
-  user: any | null;
-  logout: () => Promise<void>;
-  getToken: () => Promise<string | null>;
-  login: (email: string, password: string) => Promise<void>;
-  loading: boolean;
 }
