@@ -229,14 +229,6 @@ ApiService.setAuthToken(token);
 - ✅ Safari (latest)
 - ✅ Edge (latest)
 
-## Deployment
-
-Project siap untuk deployment ke:
-- ✅ Vercel
-- ✅ Netlify  
-- ✅ Railway
-- ✅ Any Node.js hosting
-
 ## Dependencies
 
 ### Production
@@ -250,38 +242,6 @@ Project siap untuk deployment ke:
 - `typescript`: ^5
 - `tailwindcss`: ^4.0.6
 - Various @types packages
-
-## Troubleshooting
-
-### SSL/HTTPS Errors dengan Backend Lokal
-Jika mendapat error seperti:
-```
-ssl3_get_record:wrong version number
-```
-
-**Solusi:**
-1. Pastikan `BACKEND_URL=http://localhost:8001` (HTTP, bukan HTTPS)
-2. Atau biarkan `BACKEND_URL=` kosong untuk auto-detection
-3. Backend lokal berjalan di HTTP, bukan HTTPS
-
-### Authentication Issues
-Jika gagal login atau token expired:
-1. Check Firebase configuration di `.env.local`
-2. Pastikan Firebase project aktif
-3. Clear browser cache dan localStorage
-4. Logout dan login ulang
-
-### API Connection Issues
-Jika "Failed to fetch products":
-1. Check backend URL di environment variables
-2. Pastikan backend berjalan (lokal atau railway)
-3. Check console untuk detailed error logs
-4. Verify Firebase authentication token
-
-### Development vs Production
-- **Development**: Auto menggunakan `http://localhost:8001`
-- **Production**: Auto menggunakan `https://technical-test-be-production.up.railway.app`
-- **Manual Override**: Set `BACKEND_URL` di `.env.local`
 
 ---
 
