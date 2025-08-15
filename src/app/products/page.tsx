@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table, Button, Input, Modal, Form, InputNumber, Typography,
-  Card, Row, Col, Statistic, message, Descriptions, Tag, Image
+  Card, Row, Col, Statistic, message, Descriptions, Tag, Image, Spin
 } from 'antd';
 import {
   PlusOutlined, SearchOutlined, LogoutOutlined, EditOutlined,
@@ -37,7 +37,7 @@ function useDebounce(value: string, delay: number) {
 }
 
 export default function ProductsPage() {
-  const { user, logout, getToken } = useAuth();
+  const { user, logout, getToken, loading: authLoading } = useAuth();
   const router = useRouter();
   const [form] = Form.useForm();
   
@@ -54,15 +54,6 @@ export default function ProductsPage() {
   const limit = 10;
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Set auth token when component mounts
-  useEffect(() => {
-    const initAuth = async () => {
-      const token = await getToken();
-      ApiService.setAuthToken(token);
-    };
-    initAuth();
-  }, [getToken]);
-
   // Redirect if not authenticated
   useEffect(() => {
     if (!user) {
@@ -70,37 +61,58 @@ export default function ProductsPage() {
     }
   }, [user, router]);
 
-  // Fetch products
+  // Fetch products with proper token handling
   const fetchProducts = useCallback(async (page = 1, search = '') => {
+    if (!user) return; // Don't fetch if no user
+    
     try {
       setLoading(true);
-      const response = await ApiService.getProducts({
+      
+      // Get fresh token for this request
+      const token = await getToken();
+      
+      const params: { page: number; limit: number; search?: string } = {
         page,
-        limit,
-        ...(search && { search })
-      });
+        limit
+      };
+      
+      if (search && search.trim()) {
+        params.search = search.trim();
+      }
+      
+      const response = await ApiService.getProducts(params, token);
 
       if (response.is_success) {
         setProducts(response.data);
         setTotal(response.pagination?.total || 0);
         setCurrentPage(page);
       } else {
-        message.error('Failed to fetch products');
+        console.error('API Response Error:', response);
+        message.error(`Failed to fetch products: ${response.error_code || 'Unknown error'}`);
       }
     } catch (error: any) {
-      message.error('Error fetching products: ' + error.message);
+      console.error('Fetch Products Error:', error);
+      if (error.response?.status === 401) {
+        message.error('Authentication failed. Please login again.');
+        logout();
+        router.push('/login');
+      } else {
+        message.error(`Error fetching products: ${error.response?.data?.message || error.message}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [limit]);
+  }, [limit, user, getToken, logout, router]);
 
-  // Initial fetch and search effect
+  // Initial fetch when user is ready
   useEffect(() => {
-    fetchProducts(1, debouncedSearchTerm);
-    if (debouncedSearchTerm) {
-      setCurrentPage(1);
+    if (user) {
+      fetchProducts(1, debouncedSearchTerm);
+      if (debouncedSearchTerm) {
+        setCurrentPage(1);
+      }
     }
-  }, [debouncedSearchTerm, fetchProducts]);
+  }, [user, debouncedSearchTerm, fetchProducts]);
 
   // Calculate statistics
   const stats = React.useMemo(() => {
@@ -146,26 +158,41 @@ export default function ProductsPage() {
     try {
       const values = await form.validateFields();
       
+      // Get fresh token for this request
+      const token = await getToken();
+      
       if (modalMode === 'create') {
-        const response = await ApiService.createProduct(values as CreateProductData);
+        const response = await ApiService.createProduct(values as CreateProductData, token);
         if (response.is_success) {
           message.success('Product created successfully!');
           fetchProducts(currentPage, debouncedSearchTerm);
+        } else {
+          message.error(`Failed to create product: ${response.error_code || 'Unknown error'}`);
         }
       } else if (modalMode === 'edit' && selectedProduct) {
         const response = await ApiService.updateProduct(
           selectedProduct.product_id,
-          values as UpdateProductData
+          values as UpdateProductData,
+          token
         );
         if (response.is_success) {
           message.success('Product updated successfully!');
           fetchProducts(currentPage, debouncedSearchTerm);
+        } else {
+          message.error(`Failed to update product: ${response.error_code || 'Unknown error'}`);
         }
       }
       
       setModalVisible(false);
     } catch (error: any) {
-      message.error('Error: ' + error.message);
+      console.error('Modal Submit Error:', error);
+      if (error.response?.status === 401) {
+        message.error('Authentication failed. Please login again.');
+        logout();
+        router.push('/login');
+      } else {
+        message.error(`Error: ${error.response?.data?.message || error.message}`);
+      }
     }
   };
 
@@ -181,7 +208,7 @@ export default function ProductsPage() {
       title: 'Price',
       dataIndex: 'product_price',
       key: 'product_price',
-      render: (price: number) => `$${price.toFixed(2)}`,
+      render: (price: number) => `${price.toFixed(2)}`,
       sorter: (a: Product, b: Product) => a.product_price - b.product_price,
     },
     {
@@ -403,8 +430,12 @@ export default function ProductsPage() {
               step={0.01}
               placeholder="Enter price"
               style={{ width: '100%' }}
-              formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value: string | undefined) => parseFloat(value?.replace(/\$\s?|(,*)/g, '') || '0') || 0}
+              formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              parser={(value: string | undefined) => {
+                if (!value) return 0 as 0;
+                const parsed = parseFloat(value.replace(/\$\s?|(,*)/g, ''));
+                return (parsed || 0) as 0;
+              }}
             />
           </Form.Item>
 

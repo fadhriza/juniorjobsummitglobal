@@ -37,23 +37,41 @@ export async function GET(request: NextRequest) {
       headers.Authorization = authorization;
     }
 
+    console.log('Fetching products from backend:', `${BACKEND_URL}/api/web/v1/products?${params}`);
+    
     const response = await axios.get(
       `${BACKEND_URL}/api/web/v1/products?${params}`,
-      { headers }
+      { 
+        headers,
+        timeout: 10000 // 10 second timeout
+      }
     );
+    
+    console.log('Backend response status:', response.status);
+    console.log('Backend response data structure:', {
+      is_success: response.data.is_success,
+      data_length: Array.isArray(response.data.data) ? response.data.data.length : 'not array',
+      pagination: response.data.pagination
+    });
     
     return NextResponse.json(response.data);
   } catch (error: any) {
-    console.error('Products API Error:', error);
+    console.error('Products API Error:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data
+    });
+    
     return NextResponse.json(
       { 
-        status_code: '500',
+        status_code: error.response?.status?.toString() || '500',
         is_success: false,
-        error_code: 'INTERNAL_ERROR',
-        data: null,
-        message: error.response?.data?.message || 'Failed to fetch products'
+        error_code: error.response?.data?.error_code || 'INTERNAL_ERROR',
+        data: [],
+        message: error.response?.data?.message || error.message || 'Failed to fetch products'
       }, 
-      { status: 500 }
+      { status: error.response?.status || 500 }
     );
   }
 }

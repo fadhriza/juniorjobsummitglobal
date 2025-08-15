@@ -13,45 +13,56 @@ const apiClient = axios.create({
 
 // API Service class
 export class ApiService {
-  // Set authorization token
-  static setAuthToken(token: string | null) {
-    if (token) {
-      apiClient.defaults.headers.Authorization = token;
-    } else {
-      delete apiClient.defaults.headers.Authorization;
-    }
-  }
-
   // Get products with pagination and search
-  static async getProducts(params?: Partial<ProductListParams>): Promise<ApiResponse<Product[]>> {
+  static async getProducts(params?: Partial<ProductListParams>, token?: string | null): Promise<ApiResponse<Product[]>> {
     const queryParams = new URLSearchParams();
     
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
+    if (params?.search && params.search.trim()) queryParams.append('search', params.search);
 
-    const response = await apiClient.get(`/products?${queryParams}`);
+    const headers: any = {};
+    if (token) {
+      headers.Authorization = token;
+    }
+
+    const response = await apiClient.get(`/products?${queryParams}`, { headers });
     return response.data;
   }
 
   // Get single product by ID
-  static async getProduct(productId: string): Promise<ApiResponse<Product>> {
-    const response = await apiClient.get(`/product?product_id=${productId}`);
+  static async getProduct(productId: string, token?: string | null): Promise<ApiResponse<Product>> {
+    const headers: any = {};
+    if (token) {
+      headers.Authorization = token;
+    }
+
+    const response = await apiClient.get(`/product?product_id=${productId}`, { headers });
     return response.data;
   }
 
   // Create new product
-  static async createProduct(productData: CreateProductData): Promise<ApiResponse<Product>> {
-    const response = await apiClient.post('/product', productData);
+  static async createProduct(productData: CreateProductData, token?: string | null): Promise<ApiResponse<Product>> {
+    const headers: any = {};
+    if (token) {
+      headers.Authorization = token;
+    }
+
+    const response = await apiClient.post('/product', productData, { headers });
     return response.data;
   }
 
   // Update existing product
-  static async updateProduct(productId: string, productData: UpdateProductData): Promise<ApiResponse<Product>> {
+  static async updateProduct(productId: string, productData: UpdateProductData, token?: string | null): Promise<ApiResponse<Product>> {
+    const headers: any = {};
+    if (token) {
+      headers.Authorization = token;
+    }
+
     const response = await apiClient.put('/product', {
       product_id: productId,
       ...productData
-    });
+    }, { headers });
     return response.data;
   }
 }

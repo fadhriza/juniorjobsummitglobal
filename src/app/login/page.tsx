@@ -32,10 +32,13 @@ export default function LoginPage() {
         await signIn(values.email, values.password);
         message.success('Logged in successfully!');
       }
-      router.push('/products');
+      
+      // Small delay to ensure Firebase auth state is updated
+      setTimeout(() => {
+        router.push('/products');
+      }, 500);
     } catch (error: any) {
       message.error(error.message || 'Authentication failed');
-    } finally {
       setLoading(false);
     }
   };
