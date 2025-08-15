@@ -44,7 +44,7 @@ File `.env.local` sudah disediakan dengan `BACKEND_URL=` kosong. Aplikasi akan o
 Set `BACKEND_URL` di `.env.local`:
 ```bash
 # Untuk backend lokal
-BACKEND_URL=http://localhost:8001
+BACKEND_URL=http://localhost:8001 {Silahkan Ganti Portnya}
 
 # Atau untuk railway backend
 BACKEND_URL=https://technical-test-be-production.up.railway.app
